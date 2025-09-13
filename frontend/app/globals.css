@@ -1,0 +1,186 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated theme colors for DeFi Dojo Neo-Samurai theme */
+  --background: #0b0c10;
+  --foreground: #ffc043;
+  --card: #1a1d23;
+  --card-foreground: #ffc043;
+  --popover: #1a1d23;
+  --popover-foreground: #ffc043;
+  --primary: #ffc043;
+  --primary-foreground: #0b0c10;
+  --secondary: #21e6c1;
+  --secondary-foreground: #0b0c10;
+  --muted: #2a2d35;
+  --muted-foreground: #8b8e95;
+  --accent: #e84545;
+  --accent-foreground: #ffffff;
+  --destructive: #e84545;
+  --destructive-foreground: #ffffff;
+  --border: #2a2d35;
+  --input: #2a2d35;
+  --ring: #ffc043;
+  --chart-1: #ffc043;
+  --chart-2: #21e6c1;
+  --chart-3: #e84545;
+  --chart-4: #8b8e95;
+  --chart-5: #ffffff;
+  --radius: 0.625rem;
+  --sidebar: #0b0c10;
+  --sidebar-foreground: #ffc043;
+  --sidebar-primary: #ffc043;
+  --sidebar-primary-foreground: #0b0c10;
+  --sidebar-accent: #21e6c1;
+  --sidebar-accent-foreground: #0b0c10;
+  --sidebar-border: #2a2d35;
+  --sidebar-ring: #ffc043;
+}
+
+.dark {
+  /* Dark theme uses same colors as this is primarily a dark theme */
+  --background: #0b0c10;
+  --foreground: #ffc043;
+  --card: #1a1d23;
+  --card-foreground: #ffc043;
+  --popover: #1a1d23;
+  --popover-foreground: #ffc043;
+  --primary: #ffc043;
+  --primary-foreground: #0b0c10;
+  --secondary: #21e6c1;
+  --secondary-foreground: #0b0c10;
+  --muted: #2a2d35;
+  --muted-foreground: #8b8e95;
+  --accent: #e84545;
+  --accent-foreground: #ffffff;
+  --destructive: #e84545;
+  --destructive-foreground: #ffffff;
+  --border: #2a2d35;
+  --input: #2a2d35;
+  --ring: #ffc043;
+  --chart-1: #ffc043;
+  --chart-2: #21e6c1;
+  --chart-3: #e84545;
+  --chart-4: #8b8e95;
+  --chart-5: #ffffff;
+  --sidebar: #0b0c10;
+  --sidebar-foreground: #ffc043;
+  --sidebar-primary: #ffc043;
+  --sidebar-primary-foreground: #0b0c10;
+  --sidebar-accent: #21e6c1;
+  --sidebar-accent-foreground: #0b0c10;
+  --sidebar-border: #2a2d35;
+  --sidebar-ring: #ffc043;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-orbitron);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+/* Added dojo grid overlay effect */
+.dojo-grid {
+  position: relative;
+}
+
+.dojo-grid::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: linear-gradient(rgba(255, 192, 67, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 192, 67, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Added katana slash animation for CTAs */
+@keyframes katana-slash {
+  0% {
+    transform: translateX(-100%) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+.katana-slash::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 40%, rgba(255, 192, 67, 0.3) 50%, transparent 60%);
+  transform: translateX(-100%) rotate(-45deg);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.katana-slash:hover::after {
+  animation: katana-slash 0.6s ease-in-out;
+}
