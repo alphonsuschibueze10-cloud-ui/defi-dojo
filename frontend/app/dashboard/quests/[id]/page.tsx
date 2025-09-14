@@ -17,7 +17,7 @@ import {
   Loader2,
   ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline"
-import { questService } from "../../../../lib/services/quest-service"
+import { questService } from "../../../../../frontend/lib/services/quest-service"
 import { Quest } from "@/lib/api"
 
 interface QuestStep {

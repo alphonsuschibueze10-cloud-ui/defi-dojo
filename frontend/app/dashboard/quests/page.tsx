@@ -10,8 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast"
 import { Sparkles, Trophy, Play, CheckCircle, Clock, Loader2 } from "lucide-react"
 import Link from "next/link"
-import { questService } from "../../../lib/services/quest-service"
-import { Quest, UserQuest } from "../../../lib/api"
+import { questService } from "../../../../frontend/lib/services/quest-service"
+import { Quest, UserQuest } from "../../../../frontend/lib/api"
 
 // Quest interface is now imported from the API
 

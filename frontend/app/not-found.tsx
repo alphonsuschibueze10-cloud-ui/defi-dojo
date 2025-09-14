@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { SparklesIcon } from "@heroicons/react/24/outline"
-import { useAuthStore } from "../lib/stores/auth-store"
+import { useAuthStore } from "../frontend/lib/stores/auth-store"
 
 export default function NotFound() {
   const router = useRouter()
