@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: defidojo-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: defidojo-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://defi-dojo.vercel.app,https://defi-dojo-git-main-alphonsuschibueze10-cloud-ui.vercel.app
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: defidojo-redis
+          property: connectionString
+
+databases:
+  - name: defidojo-db
+    plan: free
+    databaseName: defidojo
+    user: defidojo_user
+
+  - type: redis
+    name: defidojo-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
