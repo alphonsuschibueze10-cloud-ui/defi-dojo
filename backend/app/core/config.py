@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379/0"
     
+    # Security
+    secret_key: str = "your-secret-key-here"
+    
     # API Keys
     groq_api_key: str
     hiro_api_key: Optional[str] = None
