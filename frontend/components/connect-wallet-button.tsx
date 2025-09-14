@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { useAuthStore } from "../frontend/lib/stores/auth-store"
+import { useAuthStore } from "../lib/stores/auth-store"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Wallet, CheckCircle } from "lucide-react"
 
