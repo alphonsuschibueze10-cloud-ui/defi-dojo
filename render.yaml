@@ -16,7 +16,7 @@ services:
         fromDatabase:
           name: defidojo-db
           property: connectionString
-      - key: SECRET_KEY
+      - key: JWT_SECRET
         generateValue: true
       - key: GROQ_API_KEY
         sync: false
@@ -27,6 +27,12 @@ services:
           type: redis
           name: defidojo-redis
           property: connectionString
+      - key: STACKS_API_URL
+        value: https://stacks-node-api.testnet.stacks.co
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRE_MINUTES
+        value: 30
 
   - type: redis
     name: defidojo-redis
