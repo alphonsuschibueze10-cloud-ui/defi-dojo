@@ -28,13 +28,13 @@ services:
           name: defidojo-redis
           property: connectionString
 
+  - type: redis
+    name: defidojo-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+
 databases:
   - name: defidojo-db
     plan: free
     databaseName: defidojo
     user: defidojo_user
-
-  - name: defidojo-redis
-    type: redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
