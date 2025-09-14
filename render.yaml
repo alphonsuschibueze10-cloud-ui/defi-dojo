@@ -34,7 +34,7 @@ databases:
     databaseName: defidojo
     user: defidojo_user
 
-  - type: redis
-    name: defidojo-redis
+  - name: defidojo-redis
+    type: redis
     plan: free
     maxmemoryPolicy: allkeys-lru
