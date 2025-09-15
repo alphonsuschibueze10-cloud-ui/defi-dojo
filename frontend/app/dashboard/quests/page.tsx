@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Sparkles, Trophy, Play, CheckCircle, Clock, Loader2 } from "lucide-react"
 import Link from "next/link"
@@ -261,6 +261,9 @@ export default function QuestsPage() {
                       <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                           <DialogTitle className="text-primary font-heading">Start Quest</DialogTitle>
+                          <DialogDescription>
+                            Begin your DeFi training journey with this quest. Complete the challenges to earn XP and level up your skills.
+                          </DialogDescription>
                         </DialogHeader>
                         {selectedQuest && (
                           <div className="space-y-4">

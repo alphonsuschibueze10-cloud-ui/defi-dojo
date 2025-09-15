@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useAuthStore } from "@/lib/stores/auth-store"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Wallet, CheckCircle } from "lucide-react"
@@ -44,6 +44,7 @@ const mockAPI = {
 export function ConnectWalletButton() {
   const [isConnecting, setIsConnecting] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [isDisconnectOpen, setIsDisconnectOpen] = useState(false)
   const { address, isAuthed, setAuth, clearAuth } = useAuthStore()
   const { toast } = useToast()
 
@@ -106,6 +107,7 @@ export function ConnectWalletButton() {
 
   const handleDisconnect = () => {
     clearAuth()
+    setIsDisconnectOpen(false)
     toast({
       title: "Wallet Disconnected",
       description: "Your wallet has been disconnected.",
@@ -114,7 +116,7 @@ export function ConnectWalletButton() {
 
   if (isAuthed && address) {
     return (
-      <Dialog>
+      <Dialog open={isDisconnectOpen} onOpenChange={setIsDisconnectOpen}>
         <DialogTrigger asChild>
           <Button variant="outline" className="flex items-center gap-2 bg-transparent">
             <CheckCircle className="w-4 h-4 text-secondary" />
@@ -127,6 +129,9 @@ export function ConnectWalletButton() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-primary font-heading">Wallet Connected</DialogTitle>
+            <DialogDescription>
+              Your wallet is successfully connected. You can now access all features of the DeFi Dojo.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="p-4 bg-secondary/10 rounded-lg border border-secondary/20">
@@ -157,12 +162,11 @@ export function ConnectWalletButton() {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-primary font-heading">Connect Your Wallet</DialogTitle>
+          <DialogDescription>
+            Connect your Stacks wallet to start your DeFi journey in the dojo. We'll need you to sign a message to verify ownership.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <p className="text-muted-foreground">
-            Connect your Stacks wallet to start your DeFi journey in the dojo. We'll need you to sign a message to
-            verify ownership.
-          </p>
 
           <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
             <div className="flex items-center gap-3">
