@@ -13,7 +13,7 @@ class QuestResponse(BaseModel):
     active: bool
     
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class QuestStartRequest(BaseModel):
@@ -47,4 +47,4 @@ class QuestStatusResponse(BaseModel):
     last_updated: datetime
     
     class Config:
-        from_attributes = True
+        orm_mode = True

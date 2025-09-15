@@ -1,5 +1,4 @@
-from pydantic_settings import BaseSettings
-from pydantic import field_validator
+from pydantic import BaseSettings, validator
 from typing import Optional, List
 import os
 
@@ -33,7 +32,7 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: List[str] = ["http://localhost:3000", "http://localhost:5173"]
     
-    @field_validator('cors_origins', mode='before')
+    @validator('cors_origins', pre=True)
     @classmethod
     def parse_cors_origins(cls, v):
         if isinstance(v, str):
