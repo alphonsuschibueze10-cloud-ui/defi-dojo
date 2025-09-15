@@ -154,6 +154,12 @@ Browse available quests:
 - **Lightning Network** - Fast payments
 - **DeFi Protocols** - Various DeFi integrations
 
+### Smart Contracts
+- **dojo-badge.clar** - NFT contract for quest badges
+- **dojo-badge-trait.clar** - Trait definition contract
+- **Network**: Stacks Testnet (deployed)
+- **Deployer**: ST18BWSNQ8AG5FT6SSTE65GZS4CJHVCPZY3DGX71Q
+
 ## 📁 Project Structure
 
 ```
@@ -174,6 +180,13 @@ defidojo/
 │   ├── lib/                # Utilities and services
 │   ├── public/             # Static assets
 │   └── package.json        # Node dependencies
+├── defidojo-contracts/     # Stacks smart contracts
+│   ├── contracts/          # Clarinet contracts
+│   │   ├── dojo-badge.clar
+│   │   └── dojo-badge-trait.clar
+│   ├── tests/              # Contract tests
+│   ├── deployments/        # Deployment plans
+│   └── Clarinet.toml       # Clarinet configuration
 ├── docs/                   # Documentation
 └── README.md              # This file
 ```
@@ -215,6 +228,25 @@ The platform supports multiple authentication methods:
 - **Guest Mode** - Play without authentication
 - **JWT Tokens** - Secure session management
 
+## 🏆 Smart Contract Features
+
+### NFT Badge System
+- **Quest Completion Badges** - Earn unique NFTs for completing quests
+- **Achievement Badges** - Special badges for milestones and achievements
+- **Rarity System** - Different badge rarities based on quest difficulty
+- **Metadata Storage** - Rich metadata including quest details and completion stats
+
+### Contract Functions
+- **Mint Badge** - Mint new badges for quest completion
+- **Transfer Badges** - Transfer badges between users
+- **Query Badges** - Query user's badge collection
+- **Badge Metadata** - Retrieve detailed badge information
+
+### Security Features
+- **Owner-Only Minting** - Only authorized addresses can mint badges
+- **Quest Verification** - Badges are only minted after quest completion
+- **Immutable Metadata** - Badge data cannot be modified after minting
+
 ## 📊 API Endpoints
 
 ### Quest Management
@@ -252,6 +284,38 @@ python api_demo.py
 ```
 
 ## 🚀 Deployment
+
+### Smart Contract Deployment
+
+The DeFi Dojo smart contracts are deployed on Stacks Testnet:
+
+**Contract Addresses:**
+- **dojo-badge**: `ST18BWSNQ8AG5FT6SSTE65GZS4CJHVCPZY3DGX71Q.dojo-badge`
+- **dojo-badge-trait**: `ST18BWSNQ8AG5FT6SSTE65GZS4CJHVCPZY3DGX71Q.dojo-badge-trait`
+
+**Deploy to Testnet:**
+```bash
+cd defidojo-contracts
+
+# Install dependencies
+npm install
+
+# Run tests
+npm test
+
+# Generate deployment plan
+clarinet deployments generate --testnet --medium-cost
+
+# Deploy contracts
+clarinet deployments apply --testnet
+```
+
+**Deploy to Mainnet:**
+```bash
+# Update settings/Mainnet.toml with your mainnet mnemonic
+clarinet deployments generate --mainnet --medium-cost
+clarinet deployments apply --mainnet
+```
 
 ### Backend Deployment
 ```bash
@@ -309,15 +373,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [x] User authentication
 - [x] Leaderboard
 - [x] Portfolio tracking
+- [x] Smart contract deployment (Testnet)
 
 ### Phase 2 🚧
 - [ ] Advanced quest types
+- [ ] NFT badge integration
 - [ ] Multi-chain support
 - [ ] Mobile app
 - [ ] Social features
 
 ### Phase 3 🔮
-- [ ] NFT rewards
+- [ ] Mainnet deployment
 - [ ] DAO governance
 - [ ] Institutional features
 - [ ] Advanced analytics
