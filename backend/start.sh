@@ -7,4 +7,4 @@ export PYTHONPATH="${PYTHONPATH}:/opt/render/project/src/backend"
 
 # Start the application
 echo "Starting DeFi Dojo API server..."
-uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1
+uvicorn app.simple_main:app --host 0.0.0.0 --port $PORT --workers 1
