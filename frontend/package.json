@@ -1,10 +1,10 @@
 {
-  "name": "my-v0-project",
+  "name": "defi-dojo-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
+    "build": "NEXT_PUBLIC_API_URL=https://defi-dojo.onrender.com next build",
+    "dev": "NEXT_PUBLIC_API_URL=https://defi-dojo.onrender.com next dev",
     "lint": "next lint",
     "start": "next start"
   },
