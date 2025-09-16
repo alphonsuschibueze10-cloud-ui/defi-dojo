@@ -285,7 +285,142 @@ python api_demo.py
 
 ## 🚀 Deployment
 
-### Smart Contract Deployment
+### 🌐 Live Deployment
+
+**Production URLs:**
+- **Frontend**: https://defi-dojo.vercel.app
+- **Backend API**: https://defi-dojo.onrender.com
+- **API Documentation**: https://defi-dojo.onrender.com/docs
+
+### 🏗️ Backend Deployment (Render)
+
+The backend is deployed on **Render** using a hybrid approach with automatic fallback to mock data.
+
+#### Deployment Configuration
+
+**File: `render.yaml`**
+```yaml
+services:
+  - type: web
+    name: defidojo-backend
+    env: python
+    plan: free
+    buildCommand: cd backend && pip install -r requirements-minimal.txt
+    startCommand: cd backend && python minimal_app.py
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        value: "https://defi-dojo.vercel.app,https://defi-dojo-git-main-alphonsuschibueze10-cloud-ui.vercel.app"
+```
+
+#### Key Features:
+- ✅ **Minimal HTTP Server** - Lightweight Python server for reliability
+- ✅ **CORS Support** - Handles preflight OPTIONS requests
+- ✅ **Health Checks** - Built-in health monitoring
+- ✅ **Auto-scaling** - Render handles scaling automatically
+- ✅ **Environment Variables** - Secure configuration management
+
+#### Manual Deployment Steps:
+
+1. **Connect Repository**
+   ```bash
+   # Fork/clone the repository
+   git clone https://github.com/alphonsuschibueze10-cloud-ui/defi-dojo.git
+   ```
+
+2. **Configure Render Service**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Create new Web Service
+   - Connect GitHub repository
+   - Set build command: `cd backend && pip install -r requirements-minimal.txt`
+   - Set start command: `cd backend && python minimal_app.py`
+   - Set environment: `Python 3`
+
+3. **Environment Variables**
+   ```bash
+   PORT=8000
+   ENVIRONMENT=production
+   CORS_ORIGINS=https://your-frontend-domain.vercel.app
+   ```
+
+4. **Deploy**
+   - Click "Create Web Service"
+   - Render will automatically build and deploy
+
+### 🎨 Frontend Deployment (Vercel)
+
+The frontend is deployed on **Vercel** with automatic deployments from GitHub.
+
+#### Deployment Configuration
+
+**File: `package.json`** (in frontend directory)
+```json
+{
+  "name": "defi-dojo-frontend",
+  "scripts": {
+    "build": "NEXT_PUBLIC_API_URL=https://defi-dojo.onrender.com next build",
+    "dev": "NEXT_PUBLIC_API_URL=https://defi-dojo.onrender.com next dev"
+  }
+}
+```
+
+#### Key Features:
+- ✅ **Automatic Deployments** - Deploys on every push to main
+- ✅ **Environment Variables** - API URL configured in build
+- ✅ **Hybrid API Client** - Fallback to mock data when backend is offline
+- ✅ **Backend Status Indicator** - Real-time backend connectivity status
+- ✅ **Responsive Design** - Works on all devices
+
+#### Manual Deployment Steps:
+
+1. **Connect Repository**
+   ```bash
+   # Fork/clone the repository
+   git clone https://github.com/alphonsuschibueze10-cloud-ui/defi-dojo.git
+   ```
+
+2. **Configure Vercel Project**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Import Git Repository
+   - Set Framework Preset: `Next.js`
+   - Set Root Directory: `frontend`
+
+3. **Environment Variables**
+   ```bash
+   NEXT_PUBLIC_API_URL=https://defi-dojo.onrender.com
+   ```
+
+4. **Deploy**
+   - Click "Deploy"
+   - Vercel will automatically build and deploy
+
+### 🔄 Hybrid Implementation
+
+The application uses a **hybrid approach** that ensures reliability:
+
+#### Backend Fallback Strategy:
+```typescript
+// Hybrid API Client automatically falls back to mock data
+const quests = await hybridApiClient.getPublicQuests()
+// Returns real data if backend is online, mock data if offline
+```
+
+#### Key Benefits:
+- ✅ **Always Functional** - App works even when backend is down
+- ✅ **Seamless UX** - Users don't notice backend issues
+- ✅ **Real-time Status** - Backend status indicator in UI
+- ✅ **Automatic Recovery** - Switches back to real data when backend comes online
+
+#### Mock Data Includes:
+- 4 complete quests with descriptions and rewards
+- User quest progress tracking
+- Leaderboard data
+- Portfolio information
+
+### 🏆 Smart Contract Deployment
 
 The DeFi Dojo smart contracts are deployed on Stacks Testnet:
 
@@ -317,26 +452,143 @@ clarinet deployments generate --mainnet --medium-cost
 clarinet deployments apply --mainnet
 ```
 
-### Backend Deployment
+### 🐳 Docker Deployment (Alternative)
+
+#### Backend Docker Deployment:
 ```bash
-# Using Docker
+# Build Docker image
 docker build -t defidojo-backend ./backend
-docker run -p 8000:8000 defidojo-backend
 
-# Using Railway/Heroku
-# Add Procfile and requirements.txt
+# Run container
+docker run -p 8000:8000 \
+  -e PORT=8000 \
+  -e ENVIRONMENT=production \
+  defidojo-backend
 ```
 
-### Frontend Deployment
+#### Frontend Docker Deployment:
 ```bash
-# Build for production
-cd frontend
-pnpm build
-pnpm start
+# Build Docker image
+docker build -t defidojo-frontend ./frontend
 
-# Deploy to Vercel
-vercel --prod
+# Run container
+docker run -p 3000:3000 \
+  -e NEXT_PUBLIC_API_URL=http://localhost:8000 \
+  defidojo-frontend
 ```
+
+### 🔧 Local Development Setup
+
+#### Prerequisites:
+- Node.js 18+ and pnpm
+- Python 3.9+
+- Git
+
+#### Quick Start:
+```bash
+# Clone repository
+git clone https://github.com/alphonsuschibueze10-cloud-ui/defi-dojo.git
+cd defidojo
+
+# Backend setup
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Frontend setup
+cd ../frontend
+pnpm install
+
+# Start development servers
+# Terminal 1 - Backend
+cd backend && source venv/bin/activate
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+
+# Terminal 2 - Frontend
+cd frontend
+pnpm dev
+```
+
+#### Access URLs:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+### 🚨 Troubleshooting
+
+#### Common Issues:
+
+1. **CORS Errors**
+   ```bash
+   # Check CORS_ORIGINS environment variable
+   # Ensure frontend domain is included
+   ```
+
+2. **Backend Timeout**
+   ```bash
+   # Check Render logs
+   # Verify minimal_app.py is running
+   # Check health endpoint: /health
+   ```
+
+3. **Frontend Build Errors**
+   ```bash
+   # Check NEXT_PUBLIC_API_URL is set
+   # Verify all dependencies are installed
+   # Check for TypeScript errors
+   ```
+
+4. **Hybrid Mode Not Working**
+   ```bash
+   # Check browser console for errors
+   # Verify hybrid-api.ts is imported correctly
+   # Check backend status indicator
+   ```
+
+### 📊 Monitoring & Analytics
+
+#### Backend Monitoring:
+- **Render Dashboard** - Service health and logs
+- **Health Endpoint** - `/health` for status checks
+- **CORS Logs** - Monitor cross-origin requests
+
+#### Frontend Monitoring:
+- **Vercel Analytics** - Performance and usage metrics
+- **Backend Status Indicator** - Real-time connectivity status
+- **Console Logs** - Hybrid API fallback notifications
+
+### 🔐 Security Considerations
+
+#### Environment Variables:
+- ✅ **API URLs** - Configured in build process
+- ✅ **CORS Origins** - Restricted to known domains
+- ✅ **Secrets** - Stored securely in deployment platforms
+
+#### CORS Configuration:
+```python
+# Backend CORS setup
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://defi-dojo.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
+```
+
+### 🚀 Performance Optimization
+
+#### Backend Optimizations:
+- ✅ **Minimal Dependencies** - Lightweight requirements-minimal.txt
+- ✅ **Fast Startup** - Simple HTTP server instead of full FastAPI
+- ✅ **Health Checks** - Quick response times
+
+#### Frontend Optimizations:
+- ✅ **Static Generation** - Next.js static site generation
+- ✅ **Hybrid API** - Instant fallback to mock data
+- ✅ **Lazy Loading** - Components loaded on demand
+- ✅ **Image Optimization** - Next.js automatic image optimization
 
 ## 🤝 Contributing
 
