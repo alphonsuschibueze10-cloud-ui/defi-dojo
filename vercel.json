@@ -13,7 +13,7 @@
     }
   ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://defidojo-backend.onrender.com",
-    "NEXT_PUBLIC_WS_URL": "wss://defidojo-backend.onrender.com"
+    "NEXT_PUBLIC_API_URL": "https://defi-dojo.onrender.com",
+    "NEXT_PUBLIC_WS_URL": "wss://defi-dojo.onrender.com"
   }
 }
