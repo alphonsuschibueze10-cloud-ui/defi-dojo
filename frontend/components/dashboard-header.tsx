@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Sparkles } from "lucide-react"
 import { ConnectWalletButton } from "@/components/connect-wallet-button"
+import { BackendStatusIndicator } from "@/components/backend-status"
 
 const pageNames: Record<string, string> = {
   "/dashboard": "Dashboard",
@@ -32,6 +33,7 @@ export function DashboardHeader() {
       </div>
 
       <div className="flex items-center gap-4">
+        <BackendStatusIndicator />
         <Badge variant="secondary" className="bg-slate-800 text-white border-slate-700">
           <Sparkles className="w-3 h-3 mr-1" />
           1,250 XP

@@ -1,4 +1,4 @@
-import { apiClient, Quest, UserQuest } from '../api'
+import { hybridApiClient, Quest, UserQuest } from '../hybrid-api'
 import { useAuthStore } from '../stores/auth-store'
 
 export class QuestService {
@@ -14,7 +14,7 @@ export class QuestService {
   private constructor() {
     // Update token when auth store changes
     useAuthStore.subscribe((state) => {
-      apiClient.setToken(state.jwtToken)
+      hybridApiClient.setToken(state.jwtToken)
     })
   }
 
@@ -22,7 +22,7 @@ export class QuestService {
     try {
       // Always use public endpoint for now since authentication is not fully implemented
       // TODO: Implement proper authentication flow
-      const quests = await apiClient.getPublicQuests()
+      const quests = await hybridApiClient.getPublicQuests()
       return quests.filter(quest => quest.active)
     } catch (error) {
       console.error('Failed to fetch quests:', error)
@@ -32,7 +32,7 @@ export class QuestService {
 
   async getQuestById(id: string): Promise<Quest> {
     try {
-      return await apiClient.getQuest(id)
+      return await hybridApiClient.getQuest(id)
     } catch (error) {
       console.error(`Failed to fetch quest ${id}:`, error)
       throw error
@@ -100,7 +100,7 @@ export class QuestService {
 
   async updateQuestProgress(userQuestId: string, progress: number): Promise<UserQuest> {
     try {
-      return await apiClient.updateQuestProgress(userQuestId, progress)
+      return await hybridApiClient.updateQuestProgress(userQuestId, progress)
     } catch (error) {
       console.error(`Failed to update quest progress for ${userQuestId}:`, error)
       throw error
@@ -109,7 +109,7 @@ export class QuestService {
 
   async completeQuest(userQuestId: string): Promise<UserQuest> {
     try {
-      return await apiClient.completeQuest(userQuestId)
+      return await hybridApiClient.completeQuest(userQuestId)
     } catch (error) {
       console.error(`Failed to complete quest ${userQuestId}:`, error)
       throw error
