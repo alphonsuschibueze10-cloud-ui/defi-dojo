@@ -15,6 +15,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  trailingSlash: false,
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
