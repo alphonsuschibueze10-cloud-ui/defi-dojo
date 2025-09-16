@@ -6,6 +6,8 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     envVars:
+      - key: PORT
+        value: 8000
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
