@@ -9,11 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "frontend/$1"
+      "dest": "/frontend/$1"
     }
-  ],
-  "env": {
-    "NEXT_PUBLIC_API_URL": "https://defi-dojo.onrender.com",
-    "NEXT_PUBLIC_WS_URL": "wss://defi-dojo.onrender.com"
-  }
+  ]
 }
