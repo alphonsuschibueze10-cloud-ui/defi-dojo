@@ -23,7 +23,7 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: CORS_ORIGINS
-        value: "https://defi-dojo.vercel.app,https://defi-dojo-git-main-alphonsuschibueze10-cloud-ui.vercel.app"
+        value: "https://defi-dojo.vercel.app,https://defi-dojo-git-main-alphonsuschibueze10-cloud-ui.vercel.app,https://defi-dojo-rk3zmc8tg-alphonsuschibueze10-9724s-projects.vercel.app"
       - key: REDIS_URL
         fromService:
           type: redis
