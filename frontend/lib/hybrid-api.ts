@@ -3,7 +3,7 @@ import { Quest, UserQuest, AuthResponse, NonceResponse } from './api'
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://defi-dojo.onrender.com'
 
 // Mock data for offline functionality
-const MOCK_QUESTS: Quest[] = [
+const ALL_QUESTS: Quest[] = [
   {
     id: "liquidity-kata",
     slug: "liquidity-kata",
@@ -65,6 +65,9 @@ const MOCK_QUESTS: Quest[] = [
     updated_at: "2024-01-15T10:00:00Z"
   }
 ]
+
+// Public quests (only beginner and intermediate)
+const MOCK_QUESTS: Quest[] = ALL_QUESTS.filter(quest => quest.difficulty <= 2)
 
 const MOCK_USER_QUESTS: UserQuest[] = [
   {
@@ -249,7 +252,7 @@ class HybridApiClient {
   }
 
   async getQuest(id: string): Promise<Quest> {
-    const mockQuest = MOCK_QUESTS.find(q => q.id === id)
+    const mockQuest = ALL_QUESTS.find(q => q.id === id)
     if (!mockQuest) {
       throw new Error(`Quest with id ${id} not found`)
     }
@@ -258,7 +261,7 @@ class HybridApiClient {
   }
 
   async startQuest(questId: string): Promise<UserQuest> {
-    const quest = MOCK_QUESTS.find(q => q.id === questId)
+    const quest = ALL_QUESTS.find(q => q.id === questId)
     if (!quest) {
       throw new Error(`Quest with id ${questId} not found`)
     }

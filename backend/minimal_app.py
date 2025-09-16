@@ -100,28 +100,66 @@ class SimpleHandler(BaseHTTPRequestHandler):
                     "id": "liquidity-kata",
                     "slug": "liquidity-kata",
                     "title": "Liquidity Kata",
-                    "description": "Master the art of providing liquidity to DeFi pools",
+                    "description": "Master the art of providing liquidity to DeFi pools. Learn about AMM mechanics, impermanent loss, and yield optimization strategies.",
                     "difficulty": 1,
-                    "reward_json": {"xp": 100},
-                    "active": True
+                    "reward_json": {"xp": 100, "badge": "Liquidity Provider", "badge_id": 1},
+                    "active": True,
+                    "created_at": "2024-01-15T10:00:00Z",
+                    "updated_at": "2024-01-15T10:00:00Z"
                 },
                 {
                     "id": "yield-sprint",
                     "slug": "yield-sprint", 
                     "title": "Yield Sprint",
-                    "description": "Optimize your yield farming strategies",
+                    "description": "Optimize your yield farming strategies across multiple protocols. Learn about compound interest, risk management, and portfolio diversification.",
                     "difficulty": 2,
-                    "reward_json": {"xp": 200},
-                    "active": True
+                    "reward_json": {"xp": 200, "badge": "Yield Farmer", "badge_id": 2},
+                    "active": True,
+                    "created_at": "2024-01-15T10:00:00Z",
+                    "updated_at": "2024-01-15T10:00:00Z"
                 }
             ]
+            self.wfile.write(json.dumps(response, indent=2).encode())
+        elif self.path == '/api/v1/quests/lightning-master':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            response = {
+                "id": "lightning-master",
+                "slug": "lightning-master",
+                "title": "Lightning Master",
+                "description": "Master Bitcoin Lightning Network operations. Learn about payment channels, routing, and micro-transactions.",
+                "difficulty": 3,
+                "reward_json": {"xp": 300, "badge": "Lightning Warrior", "badge_id": 3},
+                "active": True,
+                "created_at": "2024-01-15T10:00:00Z",
+                "updated_at": "2024-01-15T10:00:00Z"
+            }
+            self.wfile.write(json.dumps(response, indent=2).encode())
+        elif self.path == '/api/v1/quests/defi-ninja':
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            response = {
+                "id": "defi-ninja",
+                "slug": "defi-ninja",
+                "title": "DeFi Ninja",
+                "description": "Become a DeFi protocol expert. Learn about smart contract interactions, gas optimization, and advanced trading strategies.",
+                "difficulty": 4,
+                "reward_json": {"xp": 500, "badge": "DeFi Ninja", "badge_id": 4},
+                "active": True,
+                "created_at": "2024-01-15T10:00:00Z",
+                "updated_at": "2024-01-15T10:00:00Z"
+            }
             self.wfile.write(json.dumps(response, indent=2).encode())
         else:
             self.send_response(404)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
-            response = {"error": "Not found", "available_endpoints": ["/", "/health", "/docs", "/api/v1/quests/public"]}
+            response = {"error": "Not found", "available_endpoints": ["/", "/health", "/docs", "/api/v1/quests/public", "/api/v1/quests/lightning-master", "/api/v1/quests/defi-ninja"]}
             self.wfile.write(json.dumps(response, indent=2).encode())
 
 if __name__ == '__main__':
