@@ -36,15 +36,6 @@ export const useAuthStore = create<AuthState>()(
         }
         return persistedState
       },
-      // Force clear any existing auth data
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Always start with unauthenticated state
-          state.address = null
-          state.isAuthed = false
-          state.jwtToken = null
-        }
-      },
     },
   ),
 )

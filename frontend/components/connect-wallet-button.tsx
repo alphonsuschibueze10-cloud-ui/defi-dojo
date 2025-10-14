@@ -7,38 +7,29 @@ import { useAuthStore } from "@/lib/stores/auth-store"
 import { useToast } from "@/hooks/use-toast"
 import { Loader2, Wallet, CheckCircle } from "lucide-react"
 
-// Mock Hiro wallet interface for demo purposes
-interface MockWallet {
-  getAddress: () => Promise<string>
-  signMessage: (message: string) => Promise<string>
-  isConnected: () => boolean
+// Declare sats-connect types
+declare global {
+  interface Window {
+    XverseProviders?: any
+    LeatherProvider?: any
+  }
 }
 
-// Mock wallet implementation
-const mockWallet: MockWallet = {
-  getAddress: async () => {
-    // Simulate wallet connection delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    return "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7"
-  },
-  signMessage: async (message: string) => {
-    // Simulate signing delay
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    return `signed_${message}_${Date.now()}`
-  },
-  isConnected: () => false,
+// AddressPurpose enum from sats-connect
+enum AddressPurpose {
+  Ordinals = 'ordinals',
+  Payment = 'payment',
+  Stacks = 'stacks'
 }
 
-// Mock API calls
-const mockAPI = {
-  getNonce: async (address: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    return { nonce: `nonce_${address}_${Date.now()}` }
-  },
-  verifySignature: async (address: string, signature: string, nonce: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    return { token: `jwt_token_${Date.now()}`, success: true }
-  },
+// Import sats-connect dynamically
+let satsConnect: any = null
+if (typeof window !== 'undefined') {
+  import('sats-connect').then(module => {
+    satsConnect = module
+  }).catch(err => {
+    console.error('Failed to load sats-connect:', err)
+  })
 }
 
 export function ConnectWalletButton() {
@@ -51,53 +42,83 @@ export function ConnectWalletButton() {
   const handleConnect = async () => {
     setIsConnecting(true)
     try {
-      // Step 1: Get wallet address
+      // Wait for sats-connect to load
+      if (!satsConnect) {
+        const module = await import('sats-connect')
+        satsConnect = module
+      }
+
       toast({
         title: "Connecting Wallet",
         description: "Please approve the connection in your wallet...",
       })
 
-      const walletAddress = await mockWallet.getAddress()
+      // Request wallet connection using wallet_connect method
+      const response: any = await satsConnect.request('wallet_connect', {
+        message: 'Connect to DeFi Dojo for DeFi training and quests'
+      } as any)
 
-      // Step 2: Get nonce from backend
-      toast({
-        title: "Getting Nonce",
-        description: "Requesting authentication challenge...",
-      })
+      console.log('Wallet response:', response)
 
-      const { nonce } = await mockAPI.getNonce(walletAddress)
-
-      // Step 3: Sign nonce with wallet
-      toast({
-        title: "Sign Message",
-        description: "Please sign the authentication message in your wallet...",
-      })
-
-      const signature = await mockWallet.signMessage(nonce)
-
-      // Step 4: Verify signature with backend
-      toast({
-        title: "Verifying Signature",
-        description: "Authenticating your wallet...",
-      })
-
-      const { token, success } = await mockAPI.verifySignature(walletAddress, signature, nonce)
-
-      if (success) {
-        setAuth(walletAddress, token)
-        setIsOpen(false)
-        toast({
-          title: "Wallet Connected!",
-          description: `Successfully connected ${walletAddress.slice(0, 8)}...${walletAddress.slice(-6)}`,
-        })
-      } else {
-        throw new Error("Authentication failed")
+      // Handle error response
+      if (response?.status === 'error') {
+        const errorMsg = response?.error?.message || 'Unknown error'
+        const errorCode = response?.error?.code
+        
+        const error: any = new Error(errorMsg)
+        error.code = errorCode
+        throw error
       }
-    } catch (error) {
+
+      // Handle success response
+      if (response?.status === 'success' && response?.result?.addresses) {
+        const addresses = response.result.addresses
+        
+        // Find Stacks address
+        const stacksAddress = addresses.find((addr: any) => 
+          addr.purpose === AddressPurpose.Stacks || 
+          addr.addressType === 'stacks'
+        )
+
+        if (stacksAddress?.address) {
+          const walletAddress = stacksAddress.address
+          
+          // Store wallet connection
+          setAuth(walletAddress)
+          setIsOpen(false)
+          
+          toast({
+            title: "Wallet Connected!",
+            description: `Successfully connected ${walletAddress.slice(0, 8)}...${walletAddress.slice(-6)}`,
+          })
+          return
+        }
+      }
+
+      throw new Error('No Stacks addresses found in wallet')
+    } catch (error: any) {
       console.error("Wallet connection failed:", error)
+      
+      let errorTitle = "Connection Failed"
+      let errorDescription = "Failed to connect wallet. Please try again."
+      
+      // Handle specific errors
+      if (error.code === -32002) {
+        errorTitle = "Connection Cancelled"
+        errorDescription = "You cancelled the connection request. Please approve the request in your wallet."
+      } else if (error.message?.includes('not installed')) {
+        errorTitle = "Wallet Not Found"
+        errorDescription = "Please install Xverse or Leather wallet extension."
+      } else if (error.message?.includes('network')) {
+        errorTitle = "Network Error"
+        errorDescription = "Please check your internet connection and try again."
+      } else if (error.message) {
+        errorDescription = error.message
+      }
+      
       toast({
-        title: "Connection Failed",
-        description: "Failed to connect wallet. Please try again.",
+        title: errorTitle,
+        description: errorDescription,
         variant: "destructive",
       })
     } finally {
@@ -140,7 +161,7 @@ export function ConnectWalletButton() {
                   <Wallet className="w-5 h-5 text-secondary-foreground" />
                 </div>
                 <div>
-                  <p className="font-semibold">Hiro Wallet</p>
+                  <p className="font-semibold">Stacks Wallet</p>
                   <p className="text-sm text-muted-foreground font-mono">{address}</p>
                 </div>
               </div>
@@ -168,14 +189,28 @@ export function ConnectWalletButton() {
         </DialogHeader>
         <div className="space-y-4">
 
-          <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-                <Wallet className="w-5 h-5 text-primary-foreground" />
+          <div className="space-y-3">
+            <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <div>
+                  <p className="font-semibold">Xverse Wallet</p>
+                  <p className="text-sm text-muted-foreground">Recommended for Bitcoin & Stacks</p>
+                </div>
               </div>
-              <div>
-                <p className="font-semibold">Hiro Wallet</p>
-                <p className="text-sm text-muted-foreground">Recommended for Stacks ecosystem</p>
+            </div>
+            
+            <div className="p-4 bg-secondary/10 rounded-lg border border-secondary/20">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-secondary-foreground" />
+                </div>
+                <div>
+                  <p className="font-semibold">Leather Wallet</p>
+                  <p className="text-sm text-muted-foreground">Alternative Stacks wallet</p>
+                </div>
               </div>
             </div>
           </div>
@@ -189,7 +224,7 @@ export function ConnectWalletButton() {
             ) : (
               <>
                 <Wallet className="w-4 h-4 mr-2" />
-                Connect Hiro Wallet
+                Connect Wallet
               </>
             )}
           </Button>

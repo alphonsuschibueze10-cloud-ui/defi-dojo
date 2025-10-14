@@ -35,15 +35,105 @@ const ALL_QUESTS: Quest[] = [
     updated_at: "2024-01-15T10:00:00Z"
   },
   {
+    id: "swap-sensei",
+    slug: "swap-sensei",
+    title: "Swap Sensei",
+    description: "Master the art of token swapping on decentralized exchanges. Learn about slippage, price impact, and optimal swap routes.",
+    difficulty: 1,
+    reward_json: {
+      xp: 100,
+      badge: "Swap Master",
+      badge_id: 5
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "staking-warrior",
+    slug: "staking-warrior",
+    title: "Staking Warrior",
+    description: "Learn to stake your STX tokens and earn rewards. Understand delegation, lock periods, and stacking cycles on the Stacks blockchain.",
+    difficulty: 1,
+    reward_json: {
+      xp: 150,
+      badge: "Staking Pro",
+      badge_id: 6
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "arbitrage-master",
+    slug: "arbitrage-master",
+    title: "Arbitrage Master",
+    description: "Discover and execute profitable arbitrage opportunities across different DEXs. Learn to spot price differences and execute multi-step trades.",
+    difficulty: 3,
+    reward_json: {
+      xp: 300,
+      badge: "Arbitrage Expert",
+      badge_id: 7
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "lending-legend",
+    slug: "lending-legend",
+    title: "Lending Legend",
+    description: "Master DeFi lending and borrowing protocols. Learn about collateral ratios, liquidation risks, and interest rate models.",
+    difficulty: 2,
+    reward_json: {
+      xp: 250,
+      badge: "Lending Master",
+      badge_id: 8
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "nft-trader",
+    slug: "nft-trader",
+    title: "NFT Trader",
+    description: "Learn to trade NFTs on Bitcoin and Stacks. Understand floor prices, rarity traits, and marketplace dynamics.",
+    difficulty: 2,
+    reward_json: {
+      xp: 200,
+      badge: "NFT Collector",
+      badge_id: 9
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
     id: "lightning-master",
     slug: "lightning-master",
     title: "Lightning Master",
     description: "Master Bitcoin Lightning Network operations. Learn about payment channels, routing, and micro-transactions.",
     difficulty: 3,
     reward_json: {
-      xp: 300,
+      xp: 350,
       badge: "Lightning Warrior",
       badge_id: 3
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "flash-loan-ninja",
+    slug: "flash-loan-ninja",
+    title: "Flash Loan Ninja",
+    description: "Learn advanced DeFi strategies using flash loans. Execute complex multi-protocol transactions without upfront capital.",
+    difficulty: 4,
+    reward_json: {
+      xp: 500,
+      badge: "Flash Loan Expert",
+      badge_id: 10
     },
     active: true,
     created_at: "2024-01-15T10:00:00Z",
@@ -56,9 +146,39 @@ const ALL_QUESTS: Quest[] = [
     description: "Become a DeFi protocol expert. Learn about smart contract interactions, gas optimization, and advanced trading strategies.",
     difficulty: 4,
     reward_json: {
-      xp: 500,
+      xp: 600,
       badge: "DeFi Ninja",
       badge_id: 4
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "portfolio-optimizer",
+    slug: "portfolio-optimizer",
+    title: "Portfolio Optimizer",
+    description: "Learn to build and rebalance a diversified DeFi portfolio. Master risk management and asset allocation strategies.",
+    difficulty: 3,
+    reward_json: {
+      xp: 300,
+      badge: "Portfolio Manager",
+      badge_id: 11
+    },
+    active: true,
+    created_at: "2024-01-15T10:00:00Z",
+    updated_at: "2024-01-15T10:00:00Z"
+  },
+  {
+    id: "dao-governor",
+    slug: "dao-governor",
+    title: "DAO Governor",
+    description: "Participate in decentralized governance. Learn to create proposals, vote on decisions, and shape protocol development.",
+    difficulty: 2,
+    reward_json: {
+      xp: 250,
+      badge: "DAO Participant",
+      badge_id: 12
     },
     active: true,
     created_at: "2024-01-15T10:00:00Z",
