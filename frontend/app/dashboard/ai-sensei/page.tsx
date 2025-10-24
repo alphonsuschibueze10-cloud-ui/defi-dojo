@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { Zap, Sparkles, Clock, Loader2, Send, Expand } from "lucide-react"
+import { hybridApiClient } from "@/lib/hybrid-api"
 
 interface AIHint {
   id: string
@@ -50,42 +51,106 @@ export default function AISenseiPage() {
     if (!message.trim() || isLoading || cooldownTime > 0) return
 
     setIsLoading(true)
-    try {
-      // Mock AI response generation
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+    const userMessage = message
+    setMessage("")
 
+    try {
+      // Request AI hint from backend
+      const requestResponse = await hybridApiClient.requestAIHint('guest-quest', {
+        question: userMessage,
+        context: 'general'
+      })
+
+      // Create placeholder hint
       const newHint: AIHint = {
-        id: Date.now().toString(),
-        shortHint: "AI is analyzing your request and will provide insights shortly...",
-        fullResponse: `Based on your question "${message}", here's a detailed analysis of the current market conditions and recommended strategies. This is a mock response that would normally come from the AI backend.`,
-        prompt: message,
+        id: requestResponse.ai_run_id,
+        shortHint: "AI is analyzing your request...",
+        fullResponse: "Generating detailed response...",
+        prompt: userMessage,
         timestamp: new Date(),
       }
 
       setHints([newHint, ...hints])
-      setMessage("")
 
-      // Start cooldown (30 seconds for demo)
+      // Poll for result
+      let attempts = 0
+      const maxAttempts = 10
+      const pollInterval = setInterval(async () => {
+        attempts++
+        
+        try {
+          const result = await hybridApiClient.getAIHint(requestResponse.ai_run_id)
+          
+          if (result.status === 'completed' && result.hint) {
+            // Update hint with actual response
+            setHints(prevHints => 
+              prevHints.map(h => 
+                h.id === requestResponse.ai_run_id
+                  ? {
+                      ...h,
+                      shortHint: result.hint || 'Response received',
+                      fullResponse: result.hint || 'No detailed response available'
+                    }
+                  : h
+              )
+            )
+            clearInterval(pollInterval)
+            
+            toast({
+              title: "AI Sensei Responded ✨",
+              description: "Your insight is ready!",
+            })
+          } else if (result.status === 'failed' || attempts >= maxAttempts) {
+            clearInterval(pollInterval)
+            setHints(prevHints => 
+              prevHints.map(h => 
+                h.id === requestResponse.ai_run_id
+                  ? {
+                      ...h,
+                      shortHint: 'AI response timed out or failed',
+                      fullResponse: 'The AI service is currently unavailable. This is a simulated response for demonstration purposes.'
+                    }
+                  : h
+              )
+            )
+          }
+        } catch (pollError) {
+          console.error('Polling error:', pollError)
+          if (attempts >= maxAttempts) {
+            clearInterval(pollInterval)
+          }
+        }
+      }, 2000)
+
+      // Start cooldown (30 seconds)
       setCooldownTime(30)
-      const interval = setInterval(() => {
+      const cooldownInterval = setInterval(() => {
         setCooldownTime((prev) => {
           if (prev <= 1) {
-            clearInterval(interval)
+            clearInterval(cooldownInterval)
             return 0
           }
           return prev - 1
         })
       }, 1000)
 
-      toast({
-        title: "AI Sensei Responded",
-        description: "Your hint has been generated successfully!",
-      })
     } catch (error) {
+      console.error('AI hint error:', error)
+      
+      // Fallback to mock response
+      const newHint: AIHint = {
+        id: Date.now().toString(),
+        shortHint: "AI service is currently offline - showing demo response",
+        fullResponse: `Based on your question "${userMessage}", here's a simulated response. Connect the backend API to get real AI-powered insights about DeFi strategies, market analysis, and trading recommendations.`,
+        prompt: userMessage,
+        timestamp: new Date(),
+      }
+
+      setHints([newHint, ...hints])
+
       toast({
-        title: "Failed to Get Hint",
-        description: "Please try again later.",
-        variant: "destructive",
+        title: "Using Demo Mode",
+        description: "Backend API not connected. Showing simulated response.",
       })
     } finally {
       setIsLoading(false)

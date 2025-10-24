@@ -452,6 +452,65 @@ class HybridApiClient {
     return this.requestWithFallback(`/api/v1/leaderboard/user/${userId}`, mockPosition)
   }
 
+  // AI Hint endpoints
+  async requestAIHint(userQuestId: string, context: any): Promise<{ ai_run_id: string; status: string }> {
+    const mockResponse = {
+      ai_run_id: `mock-${Date.now()}`,
+      status: 'queued'
+    }
+    
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ai/hint`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.token && { 'Authorization': `Bearer ${this.token}` })
+        },
+        body: JSON.stringify({
+          user_quest_id: userQuestId,
+          context: context
+        }),
+        signal: AbortSignal.timeout(10000)
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.warn('AI hint request failed, using mock:', error)
+      return mockResponse
+    }
+  }
+
+  async getAIHint(aiRunId: string): Promise<{ ai_run_id: string; status: string; hint?: string; risk?: string; param?: any }> {
+    const mockResponse = {
+      ai_run_id: aiRunId,
+      status: 'completed',
+      hint: 'This is a simulated AI response. Connect to the backend to get real AI-powered insights about DeFi strategies and market analysis.'
+    }
+    
+    try {
+      const response = await fetch(`${this.baseUrl}/api/v1/ai/hint/${aiRunId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...(this.token && { 'Authorization': `Bearer ${this.token}` })
+        },
+        signal: AbortSignal.timeout(10000)
+      })
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+      
+      return await response.json()
+    } catch (error) {
+      console.warn('AI hint fetch failed, using mock:', error)
+      return mockResponse
+    }
+  }
+
   // Health check
   async healthCheck(): Promise<{ status: string }> {
     try {
