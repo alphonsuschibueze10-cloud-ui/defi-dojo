@@ -106,7 +106,17 @@ export default function QuestDetailPage() {
   const loadQuest = async () => {
     try {
       setLoading(true)
-      // Get quest data from the public endpoint instead of individual quest endpoint
+      
+      // Try to get quest directly by ID first (faster)
+      try {
+        const questData = await questService.getQuestById(questId)
+        setQuest(questData)
+        return
+      } catch (directError) {
+        console.log('Direct quest fetch failed, falling back to list:', directError)
+      }
+      
+      // Fallback: Get quest data from the public endpoint
       const quests = await questService.getAvailableQuests()
       const questData = quests.find(q => q.id === questId)
       

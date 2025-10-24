@@ -3,6 +3,9 @@ import { useAuthStore } from '../stores/auth-store'
 
 export class QuestService {
   private static instance: QuestService
+  private questsCache: Quest[] | null = null
+  private cacheTimestamp: number = 0
+  private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
 
   static getInstance(): QuestService {
     if (!QuestService.instance) {
@@ -18,23 +21,68 @@ export class QuestService {
     })
   }
 
+  private isCacheValid(): boolean {
+    return this.questsCache !== null && (Date.now() - this.cacheTimestamp) < this.CACHE_DURATION
+  }
+
   async getAvailableQuests(): Promise<Quest[]> {
     try {
+      // Return cached data if valid
+      if (this.isCacheValid() && this.questsCache) {
+        console.log('Returning cached quests')
+        return this.questsCache
+      }
+
       // Always use public endpoint for now since authentication is not fully implemented
       // TODO: Implement proper authentication flow
+      console.log('Fetching fresh quests from API')
       const quests = await hybridApiClient.getPublicQuests()
-      return quests.filter(quest => quest.active)
+      const activeQuests = quests.filter(quest => quest.active)
+      
+      // Update cache
+      this.questsCache = activeQuests
+      this.cacheTimestamp = Date.now()
+      
+      return activeQuests
     } catch (error) {
       console.error('Failed to fetch quests:', error)
+      // Return cached data if available, even if expired
+      if (this.questsCache) {
+        console.log('Returning stale cached quests due to error')
+        return this.questsCache
+      }
       throw error
     }
   }
 
   async getQuestById(id: string): Promise<Quest> {
     try {
+      // Check cache first
+      if (this.questsCache) {
+        const cachedQuest = this.questsCache.find(q => q.id === id)
+        if (cachedQuest) {
+          console.log(`Returning quest ${id} from cache`)
+          return cachedQuest
+        }
+      }
+
+      // Try direct API call
+      console.log(`Fetching quest ${id} from API`)
       return await hybridApiClient.getQuest(id)
     } catch (error) {
       console.error(`Failed to fetch quest ${id}:`, error)
+      
+      // Last resort: try to get from full list
+      try {
+        const quests = await this.getAvailableQuests()
+        const quest = quests.find(q => q.id === id)
+        if (quest) {
+          return quest
+        }
+      } catch (listError) {
+        console.error('Failed to fetch from list as well:', listError)
+      }
+      
       throw error
     }
   }
