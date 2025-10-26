@@ -71,6 +71,9 @@ export default function QuestDetailPage() {
     stakingStarted: false,
     rewardsTracked: false
   })
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
+  const [questStartTime, setQuestStartTime] = useState<Date | null>(null)
+  const [isTimedOut, setIsTimedOut] = useState(false)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -85,6 +88,11 @@ export default function QuestDetailPage() {
         const data = JSON.parse(savedProgress)
         setCompletedSteps(data.completedSteps || [])
         setProgress(data.progress || 0)
+        
+        // Load timer data
+        if (data.startTime) {
+          setQuestStartTime(new Date(data.startTime))
+        }
       }
     } catch (error) {
       console.error('Failed to load progress:', error)
@@ -96,11 +104,63 @@ export default function QuestDetailPage() {
       localStorage.setItem(`quest-progress-${questId}`, JSON.stringify({
         completedSteps: steps,
         progress: progressPercent,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        startTime: questStartTime?.toISOString()
       }))
     } catch (error) {
       console.error('Failed to save progress:', error)
     }
+  }
+
+  // Timer effect - runs countdown
+  useEffect(() => {
+    if (!quest || !questStartTime || progress >= 100 || isTimedOut) return
+
+    // Calculate time limit based on difficulty (in minutes)
+    const timeLimitMinutes = quest.difficulty * 15 // 15min, 30min, 45min, 60min
+    const timeLimitMs = timeLimitMinutes * 60 * 1000
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - questStartTime.getTime()
+      const remaining = Math.max(0, timeLimitMs - elapsed)
+      
+      setTimeRemaining(remaining)
+
+      if (remaining === 0 && !isTimedOut) {
+        setIsTimedOut(true)
+        clearInterval(interval)
+        toast({
+          title: "Time's Up! ⏰",
+          description: "Quest time limit reached. You can still complete it, but no time bonus!",
+          variant: "destructive"
+        })
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [quest, questStartTime, progress, isTimedOut])
+
+  // Start timer when quest is first opened
+  useEffect(() => {
+    if (quest && !questStartTime && progress < 100) {
+      const startTime = new Date()
+      setQuestStartTime(startTime)
+      
+      // Save start time
+      const savedProgress = localStorage.getItem(`quest-progress-${questId}`)
+      if (savedProgress) {
+        const data = JSON.parse(savedProgress)
+        data.startTime = startTime.toISOString()
+        localStorage.setItem(`quest-progress-${questId}`, JSON.stringify(data))
+      }
+    }
+  }, [quest, questStartTime, progress])
+
+  const formatTime = (ms: number): string => {
+    const totalSeconds = Math.floor(ms / 1000)
+    const minutes = Math.floor(totalSeconds / 60)
+    const seconds = totalSeconds % 60
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }
 
   const loadQuest = async () => {
@@ -640,9 +700,33 @@ export default function QuestDetailPage() {
       
       if (newProgress >= 100) {
         setShowRewardModal(true)
+        
+        // Calculate XP with time bonus
+        let totalXP = quest!.reward_json.xp
+        let bonusXP = 0
+        
+        if (!isTimedOut && timeRemaining !== null && timeRemaining > 0) {
+          // Time bonus: 10-50% based on time remaining
+          const timeLimitMinutes = quest!.difficulty * 15
+          const timeLimitMs = timeLimitMinutes * 60 * 1000
+          const percentRemaining = (timeRemaining / timeLimitMs) * 100
+          
+          if (percentRemaining > 75) {
+            bonusXP = Math.floor(quest!.reward_json.xp * 0.5) // 50% bonus
+          } else if (percentRemaining > 50) {
+            bonusXP = Math.floor(quest!.reward_json.xp * 0.3) // 30% bonus
+          } else if (percentRemaining > 25) {
+            bonusXP = Math.floor(quest!.reward_json.xp * 0.2) // 20% bonus
+          } else {
+            bonusXP = Math.floor(quest!.reward_json.xp * 0.1) // 10% bonus
+          }
+          
+          totalXP += bonusXP
+        }
+        
         // Save total XP to localStorage
         const currentXP = parseInt(localStorage.getItem('total-xp') || '0')
-        localStorage.setItem('total-xp', (currentXP + quest!.reward_json.xp).toString())
+        localStorage.setItem('total-xp', (currentXP + totalXP).toString())
         
         // Trigger confetti celebration!
         confetti({
@@ -669,7 +753,9 @@ export default function QuestDetailPage() {
         
         toast({
           title: "Quest Completed! 🎉",
-          description: `Congratulations! You've earned ${quest!.reward_json.xp} XP.`,
+          description: bonusXP > 0 
+            ? `Congratulations! You've earned ${quest!.reward_json.xp} XP + ${bonusXP} time bonus = ${totalXP} XP!`
+            : `Congratulations! You've earned ${quest!.reward_json.xp} XP.`,
         })
       } else {
         toast({
@@ -778,10 +864,50 @@ export default function QuestDetailPage() {
                 <span className="text-sm text-muted-foreground">{Math.round(progressPercent)}%</span>
               </div>
               <Progress value={progressPercent} className="h-3 transition-all duration-500 ease-out" />
+              
+              {/* Timer Display */}
+              {timeRemaining !== null && progress < 100 && (
+                <div className={`flex items-center justify-between p-3 rounded-lg border ${
+                  isTimedOut 
+                    ? 'bg-red-50 border-red-200' 
+                    : timeRemaining < 5 * 60 * 1000 
+                      ? 'bg-orange-50 border-orange-200' 
+                      : 'bg-blue-50 border-blue-200'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <ClockIcon className={`w-4 h-4 ${
+                      isTimedOut 
+                        ? 'text-red-600' 
+                        : timeRemaining < 5 * 60 * 1000 
+                          ? 'text-orange-600' 
+                          : 'text-blue-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      isTimedOut 
+                        ? 'text-red-600' 
+                        : timeRemaining < 5 * 60 * 1000 
+                          ? 'text-orange-600' 
+                          : 'text-blue-600'
+                    }`}>
+                      {isTimedOut ? 'Time Expired' : 'Time Remaining'}
+                    </span>
+                  </div>
+                  <span className={`text-lg font-mono font-bold ${
+                    isTimedOut 
+                      ? 'text-red-600' 
+                      : timeRemaining < 5 * 60 * 1000 
+                        ? 'text-orange-600' 
+                        : 'text-blue-600'
+                  }`}>
+                    {isTimedOut ? '0:00' : formatTime(timeRemaining)}
+                  </span>
+                </div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-primary">Reward: +{quest.reward_json.xp} XP</span>
+                  <span className="font-semibold text-primary">Reward: +{quest.reward_json.xp} XP{!isTimedOut && timeRemaining !== null && ' + Time Bonus'}</span>
                 </div>
                 <Button
                   onClick={handleRequestHint}
