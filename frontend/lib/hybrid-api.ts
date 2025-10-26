@@ -3,7 +3,7 @@ import { Quest, UserQuest, AuthResponse, NonceResponse } from './api'
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://defi-dojo.onrender.com'
 
 // Mock data for offline functionality
-const ALL_QUESTS: Quest[] = [
+export const ALL_QUESTS: Quest[] = [
   {
     id: "liquidity-kata",
     slug: "liquidity-kata",

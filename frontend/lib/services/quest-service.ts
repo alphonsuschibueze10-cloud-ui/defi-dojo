@@ -1,4 +1,5 @@
-import { hybridApiClient, Quest, UserQuest } from '../hybrid-api'
+import { hybridApiClient, ALL_QUESTS } from '../hybrid-api'
+import { Quest, UserQuest } from '../api'
 import { useAuthStore } from '../stores/auth-store'
 
 export class QuestService {
@@ -38,6 +39,17 @@ export class QuestService {
       console.log('Fetching fresh quests from API')
       const quests = await hybridApiClient.getPublicQuests()
       console.log(`Received ${quests.length} quests from API`)
+      
+      // If backend returns fewer than expected quests, use all mock quests
+      // This ensures all 12 quests are always available even if backend DB is incomplete
+      if (quests.length < 12) {
+        console.log(`Backend returned only ${quests.length} quests, using all 12 mock quests instead`)
+        const allQuests = ALL_QUESTS.filter((quest: Quest) => quest.active)
+        this.questsCache = allQuests
+        this.cacheTimestamp = Date.now()
+        return allQuests
+      }
+      
       const activeQuests = quests.filter(quest => quest.active)
       console.log(`Filtered to ${activeQuests.length} active quests`)
       
