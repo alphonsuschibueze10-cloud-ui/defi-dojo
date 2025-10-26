@@ -186,8 +186,8 @@ const ALL_QUESTS: Quest[] = [
   }
 ]
 
-// Public quests (only beginner and intermediate)
-const MOCK_QUESTS: Quest[] = ALL_QUESTS.filter(quest => quest.difficulty <= 2)
+// Public quests (show all quests)
+const MOCK_QUESTS: Quest[] = ALL_QUESTS
 
 const MOCK_USER_QUESTS: UserQuest[] = [
   {
