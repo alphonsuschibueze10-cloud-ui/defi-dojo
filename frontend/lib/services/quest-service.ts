@@ -29,7 +29,7 @@ export class QuestService {
     try {
       // Return cached data if valid
       if (this.isCacheValid() && this.questsCache) {
-        console.log('Returning cached quests')
+        console.log(`Returning cached quests: ${this.questsCache.length} quests`)
         return this.questsCache
       }
 
@@ -37,7 +37,9 @@ export class QuestService {
       // TODO: Implement proper authentication flow
       console.log('Fetching fresh quests from API')
       const quests = await hybridApiClient.getPublicQuests()
+      console.log(`Received ${quests.length} quests from API`)
       const activeQuests = quests.filter(quest => quest.active)
+      console.log(`Filtered to ${activeQuests.length} active quests`)
       
       // Update cache
       this.questsCache = activeQuests
@@ -48,7 +50,7 @@ export class QuestService {
       console.error('Failed to fetch quests:', error)
       // Return cached data if available, even if expired
       if (this.questsCache) {
-        console.log('Returning stale cached quests due to error')
+        console.log(`Returning stale cached quests due to error: ${this.questsCache.length} quests`)
         return this.questsCache
       }
       throw error

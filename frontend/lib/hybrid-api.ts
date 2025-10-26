@@ -368,7 +368,10 @@ class HybridApiClient {
   }
 
   async getPublicQuests(): Promise<Quest[]> {
-    return this.requestWithFallback<Quest[]>('/api/v1/quests/public', MOCK_QUESTS)
+    console.log(`getPublicQuests called, MOCK_QUESTS length: ${MOCK_QUESTS.length}`)
+    const result = await this.requestWithFallback<Quest[]>('/api/v1/quests/public', MOCK_QUESTS)
+    console.log(`getPublicQuests returning ${result.length} quests`)
+    return result
   }
 
   async getQuest(id: string): Promise<Quest> {
